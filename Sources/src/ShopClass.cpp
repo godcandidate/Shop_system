@@ -23,7 +23,7 @@ void ShopClass::display()
 void ShopClass::openfile(string filename)
 {
     //Adding Headers
-    ifstream file("loginInfo.txt");
+    ifstream file(filename);
     is_fileEmpty = isfileEmpty(file);
 
     //writing to file
@@ -52,7 +52,9 @@ void Users::setUser(int id, string fname, string rol,
     password = pass;
     user_number = num;
 
+    saveUser();
     saveLogins();
+    cout << "\n\t\t User's details saved successfully ...... \n";
 }
 
 void Users::saveLogins()
@@ -66,9 +68,24 @@ void Users::saveLogins()
             myfile << "\t\t\t Login info" << endl;
             myfile << "ROLE,USERNAME,PASSWORD" << endl;
         }
-        myfile << user_role << "," << username << "," << password << endl; // write the params to the file separated by comma
+        is_fileEmpty = "";
+        myfile << user_role << "," << username << "," << password << endl;
         myfile.close();
-        cout << "\n\t\t Logins saved successfully ...... \n";
+}
+
+void Users::saveUser()
+{
+    string filename = "usersData.txt";
+    ShopClass::openfile(filename);
+
+    if (is_fileEmpty)
+        {
+            ShopClass::saveHeader(myfile);
+            myfile << "\t\t\t User info" << endl;
+            myfile << "ID,FULLNAME,ROLE,NUMBER" << endl;
+        }
+        myfile << user_ID << "," << fullname << "," << user_role << "," << user_number <<  endl;
+        myfile.close();
 }
 
 
@@ -87,14 +104,12 @@ bool isfileEmpty(ifstream& myfile)
             myfile.close();
             return true;
         }
-
         else
         {
             myfile.close();
             return false;
         }
     }
-
 }
 
 void Users::editLogin(string usname,string pass)
@@ -120,8 +135,24 @@ void Products::addProduct(short int id, string name, float price, short int quan
     Product_name = name;
     Product_cost = price;
     Product_quantity = quantity;
+    saveProduct();
 }
 
+void Products::saveProduct()
+{
+    string filename = "productsData.txt";
+    ShopClass::openfile(filename);
+
+    if (is_fileEmpty)
+        {
+            ShopClass::saveHeader(myfile);
+            myfile << "\t\t\t Product info" << endl;
+            myfile << "ID,NAME,COST,QUANTITY" << endl;
+        }
+        myfile << Product_ID << "," << Product_name << "," << Product_cost << "," << Product_quantity <<  endl;
+        myfile.close();
+        cout << "\n\t\t Product's details saved successfully ...... \n";
+}
 void Products::display()
 {
     cout << "Product ID   : " << Product_ID << endl;
@@ -140,6 +171,4 @@ void Customers::displayCustomer()
 {
     cout << "Name: " << name << endl;
     cout << "Number: " << number << endl;
-
 }
-
