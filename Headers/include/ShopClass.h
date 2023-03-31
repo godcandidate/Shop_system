@@ -22,7 +22,6 @@ class ShopClass
         ofstream myfile; //stores an open file
         bool is_fileEmpty;
 
-
 };
 
 class Users:ShopClass
@@ -44,16 +43,16 @@ class Users:ShopClass
         void editLogin(string, string);
 
         void display();
-
 };
 
-class Products:Users
+class Products:ShopClass
 {
     private:
         short int Product_ID;
         string Product_name;
         float Product_cost;
         short int Product_quantity;
+        void saveProduct();
 
 
     public:
