@@ -1,0 +1,6 @@
+		Arhin's ShopRite  @Kotei
+	---------------------------------------------
+			 Product info
+ID,NAME,COST,QUANTITY
+1,Indomie,10,50
+2,Egg,2,10
