@@ -1,0 +1,6 @@
+		Arhin's ShopRite  @Kotei
+	---------------------------------------------
+			 User info
+ID,FULLNAME,ROLE,NUMBER
+1,Shaukat Bint,Administrator,02567490
+2,Denzel Nii,Cashier,024567191
