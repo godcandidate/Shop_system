@@ -12,15 +12,18 @@ class ShopClass
         string name;
         string location;
 
+
     public:
         ShopClass();
         void display();
         void saveHeader(ofstream&);
         void openfile(string);
 
+
     protected:
         ofstream myfile; //stores an open file
         bool is_fileEmpty;
+        string searchfile(string, string); // search results found
 
 };
 
@@ -41,6 +44,7 @@ class Users:ShopClass
     public:
         void setUser(int, string, string, string, string, string);
         void editLogin(string, string);
+        void searchUser(string);
 
         void display();
 };
@@ -73,12 +77,21 @@ class Customers:Users
 
 };
 
-class Payments:Users
+class Transactions:Users
 {
     private:
         string date;
-        float amountToPay;
+        string cashier_name;
+        string customer_name;
+        string customer_number;
+        string product_name;
+        short int product_quantity;
+        float product_price;
+        float totalCost;
         float amountPayed;
+        float balance;
+
+    public:
 
 };
 
