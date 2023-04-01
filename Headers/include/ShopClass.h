@@ -26,6 +26,7 @@ class ShopClass
         bool is_fileEmpty;
         string searchfile(string, string); // search results found
         string* fields = nullptr; // points to the data values in a search results
+        void editfile(string, string, string, string);
 
 };
 
@@ -45,7 +46,7 @@ class Users:ShopClass
 
     public:
         void setUser(int, string, string, string, string, string);
-        void editLogin(string, string);
+        void editLogins(string, string, string);
         void searchUser(string);
 
         void display();
