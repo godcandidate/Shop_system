@@ -57,9 +57,6 @@ void ShopClass::textseparator(string text, int nsize)
             fields[i] = value;
             i++;
     }
-
-
-
 }
 
 string ShopClass::searchfile(string filename, string keyword)
@@ -78,10 +75,57 @@ string ShopClass::searchfile(string filename, string keyword)
         {
             return line;
         }
-
     }
 
 }
+
+void ShopClass::editfile(string filename, string searchword, string oldword, string newword )
+{
+     // Open the CSV file in read mode and create a temporary file in write mode
+    ifstream infile(filename);
+    ofstream outfile("temp.csv");
+
+    // Loop through each line of the CSV file
+    string line;
+    while (getline(infile, line)) {
+        // Use a stringstream to retrieve the line of the search result
+        stringstream ss(line);
+
+        // Check if the searchword is present in the line
+        if (line.find(searchword) != string::npos) 
+        {
+            // Accumulate the modified line with the new values
+            cout << "\n Replacing word ..........\n";
+            stringstream modified_line;
+            string value;
+            while (getline(ss, value, ',')) 
+            {
+                if (value == oldword) 
+                {
+                    modified_line << newword;
+                } else {
+                    modified_line << value;
+                }
+                modified_line << ",";
+            }
+            modified_line.seekp(-1, ios_base::end); // Remove the last comma
+
+            // Write the modified line to the temporary file
+            outfile << modified_line.str() << endl;
+        } else {
+            // Write the original line to the temporary file
+            outfile << line << endl;
+        }
+    }
+
+    // Close both files and replace the original file with the temporary file
+    infile.close();
+    outfile.close();
+    remove(filename.c_str());
+    rename("temp.csv", filename.c_str());
+
+}
+
 void Users::setUser(int id, string fname, string rol,
                     string usname,string pass, string num)
 {
@@ -107,9 +151,9 @@ void Users::saveLogins()
         {
             ShopClass::saveHeader(myfile);
             myfile << "\t\t\t Login info" << endl;
-            myfile << "ROLE,USERNAME,PASSWORD" << endl;
+            myfile << "ID,USERNAME,PASSWORD" << endl;
         }
-        myfile << user_role << "," << username << "," << password << endl;
+        myfile << user_ID << "," << username << "," << password << endl;
         myfile.close();
 }
 
@@ -149,6 +193,11 @@ void Users::searchUser(string keyword)
 
 }
 
+void Users::editLogins(string id, string oldword, string newword)
+{
+    string filename = "loginInfo.txt";
+    ShopClass::editfile(filename, id, oldword, newword);
+}
 
 bool isfileEmpty(ifstream& myfile)
 {
@@ -173,11 +222,6 @@ bool isfileEmpty(ifstream& myfile)
     }
 }
 
-void Users::editLogin(string usname,string pass)
-{
-    username = usname;
-    password = pass;
-}
 
 void Users::display()
 {
