@@ -1,6 +1,6 @@
 		Arhin's ShopRite  @Kotei
 	---------------------------------------------
 			 Login info
-ROLE,USERNAME,PASSWORD
-Administrator,Admin,pas123
-Cashier,Denz,w23frac
+ID,USERNAME,PASSWORD
+1,ADmin,pas123,
+2,Denz,w23frac
