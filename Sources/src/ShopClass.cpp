@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -40,6 +41,26 @@ void ShopClass::saveHeader(ofstream& file)
 {
     file << "\t\t" << name << "  @" << location << endl;
     file << "\t---------------------------------------------\n";
+}
+
+string ShopClass::searchfile(string filename, string keyword)
+{
+    ifstream file(filename);
+    string line;
+
+    //skipping the first four lines
+    for (int i=0; i < 4; i++)
+        getline(file, line);
+
+    while (getline(file, line))
+    {
+        size_t pos = line.find(keyword);
+        if (pos != string::npos)
+        {
+            return line;
+        }
+
+    }
 }
 void Users::setUser(int id, string fname, string rol,
                     string usname,string pass, string num)
@@ -86,6 +107,15 @@ void Users::saveUser()
         }
         myfile << user_ID << "," << fullname << "," << user_role << "," << user_number <<  endl;
         myfile.close();
+}
+
+void Users::searchUser(string keyword)
+{
+    string query = ShopClass::searchfile("usersData.txt", keyword);
+    if (query.size() != 0)
+        cout << "Item found : " << query;
+    else
+        cout << "Item not found " << endl;
 }
 
 
@@ -172,3 +202,4 @@ void Customers::displayCustomer()
     cout << "Name: " << name << endl;
     cout << "Number: " << number << endl;
 }
+
