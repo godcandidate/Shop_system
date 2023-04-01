@@ -18,12 +18,14 @@ class ShopClass
         void display();
         void saveHeader(ofstream&);
         void openfile(string);
+        void textseparator(string, int);
 
 
     protected:
         ofstream myfile; //stores an open file
         bool is_fileEmpty;
         string searchfile(string, string); // search results found
+        string* fields = nullptr; // points to the data values in a search results
 
 };
 
