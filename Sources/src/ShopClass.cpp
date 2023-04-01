@@ -4,10 +4,12 @@
 #include <unordered_map>
 #include <fstream>
 #include <sstream>
+#include <typeinfo>
 
 using namespace std;
 
 bool isfileEmpty(ifstream&);
+
 
 ShopClass::ShopClass()
 {
@@ -43,6 +45,23 @@ void ShopClass::saveHeader(ofstream& file)
     file << "\t---------------------------------------------\n";
 }
 
+void ShopClass::textseparator(string text, int nsize)
+{
+    string value;
+    fields = new string[nsize];
+
+    stringstream ss(text);
+    int i=0;
+    while (getline(ss, value, ','))
+    {
+            fields[i] = value;
+            i++;
+    }
+
+
+
+}
+
 string ShopClass::searchfile(string filename, string keyword)
 {
     ifstream file(filename);
@@ -61,6 +80,7 @@ string ShopClass::searchfile(string filename, string keyword)
         }
 
     }
+
 }
 void Users::setUser(int id, string fname, string rol,
                     string usname,string pass, string num)
@@ -89,7 +109,6 @@ void Users::saveLogins()
             myfile << "\t\t\t Login info" << endl;
             myfile << "ROLE,USERNAME,PASSWORD" << endl;
         }
-        is_fileEmpty = "";
         myfile << user_role << "," << username << "," << password << endl;
         myfile.close();
 }
@@ -113,9 +132,21 @@ void Users::searchUser(string keyword)
 {
     string query = ShopClass::searchfile("usersData.txt", keyword);
     if (query.size() != 0)
+    {
         cout << "Item found : " << query;
+        ShopClass::textseparator(query,5);
+        cout << "\n--------VALUES----------\n";
+
+        for (int i = 0; i < 5; i++) {
+        cout <<  fields[i] << endl;
+        }
+        //convert id to float
+        float di = stof(fields[0]);
+        cout << "-- " << di + 1;
+    }
     else
         cout << "Item not found " << endl;
+
 }
 
 
@@ -202,4 +233,3 @@ void Customers::displayCustomer()
     cout << "Name: " << name << endl;
     cout << "Number: " << number << endl;
 }
-
