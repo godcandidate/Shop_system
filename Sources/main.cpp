@@ -17,10 +17,13 @@ int main() {
     product1.addProduct(1, "Indomie",10.00,50);
     product2.addProduct(2, "Egg",2.00,10);
 
-*/
+
     Users user1;
     user1.searchUser("Shaukat");
-    user1.editLogins("1", "admin", "ADmin");
+    user1.editLogins("1", "ADmin", "administrate");
+*/
 
+    Transactions transact;
+    transact.setTransact("12/02/23", "Shaukat", "Tutu Emma", "02346635", "Indomie", 50, 10.00);
   return 0;
 }
