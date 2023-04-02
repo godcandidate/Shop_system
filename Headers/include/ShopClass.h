@@ -80,7 +80,7 @@ class Customers:Users
 
 };
 
-class Transactions:Users
+class Transactions:ShopClass
 {
     private:
         string date;
@@ -93,9 +93,12 @@ class Transactions:Users
         float totalCost;
         float amountPayed;
         float balance;
+        int retrieveProduct(string, int);
+        void displayProgress();
 
     public:
-
+        void setTransact(string, string, string, string,
+                     string, short int, float);
 };
 
 #endif // SHOPCLASS_H
