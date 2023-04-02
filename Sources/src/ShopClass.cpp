@@ -92,15 +92,15 @@ void ShopClass::editfile(string filename, string searchword, string oldword, str
         stringstream ss(line);
 
         // Check if the searchword is present in the line
-        if (line.find(searchword) != string::npos) 
+        if (line.find(searchword) != string::npos)
         {
             // Accumulate the modified line with the new values
             cout << "\n Replacing word ..........\n";
             stringstream modified_line;
             string value;
-            while (getline(ss, value, ',')) 
+            while (getline(ss, value, ','))
             {
-                if (value == oldword) 
+                if (value == oldword)
                 {
                     modified_line << newword;
                 } else {
@@ -272,8 +272,35 @@ void Customers::setCustomer(string fname, string mobile)
     number = mobile;
 }
 
-void Customers::displayCustomer()
+int Transactions::retrieveProduct(string name, int qty)
 {
-    cout << "Name: " << name << endl;
-    cout << "Number: " << number << endl;
+    string results = ShopClass::searchfile("productsData.txt", name);
+    if (results.size() != 0)
+    {
+        cout << results ;
+        ShopClass::textseparator(results, 4);
+        if (stof(fields[3]) >= qty)
+            return stoi(fields[2]);
+        else
+           cout << "\n only " << fields[3] << " stocks of " << name << " available....";
+    }
+    else
+        cout << "Error!... product " << name << " not found";
 }
+void Transactions::setTransact(string tdate, string cashier, string customerName,
+                               string customerNumber, string productName,
+                               short int qty, float price )
+{
+    date = tdate;
+    cashier_name = cashier;
+    customer_name = customerName;
+    customer_number = customerNumber;
+    product_name = productName;
+    product_quantity = qty;
+    product_price = price;
+
+    int proPrice = retrieveProduct(product_name, product_quantity);
+    cout << "\n The product price is GHc"<< proPrice;
+
+}
+
