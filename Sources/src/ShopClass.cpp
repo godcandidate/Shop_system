@@ -222,7 +222,6 @@ bool isfileEmpty(ifstream& myfile)
     }
 }
 
-
 void Users::display()
 {
     ShopClass::display();
@@ -279,17 +278,15 @@ int Transactions::retrieveProduct(string name, int qty)
     {
         cout << results ;
         ShopClass::textseparator(results, 4);
-        if (stof(fields[3]) >= qty)
-            return stoi(fields[2]);
-        else
-           cout << "\n only " << fields[3] << " stocks of " << name << " available....";
+        return stoi(fields[2]);
     }
     else
         cout << "Error!... product " << name << " not found";
 }
-void Transactions::setTransact(string tdate, string cashier, string customerName,
+
+bool Transactions::setTransact(string tdate, string cashier, string customerName,
                                string customerNumber, string productName,
-                               short int qty, float price )
+                               int qty)
 {
     date = tdate;
     cashier_name = cashier;
@@ -297,9 +294,63 @@ void Transactions::setTransact(string tdate, string cashier, string customerName
     customer_number = customerNumber;
     product_name = productName;
     product_quantity = qty;
-    product_price = price;
 
-    int proPrice = retrieveProduct(product_name, product_quantity);
-    cout << "\n The product price is GHc"<< proPrice;
+    // Retrieve product price from product file
+    product_price = retrieveProduct(product_name, product_quantity);
+    totalCost = product_price * product_quantity;
 
+    if (product_quantity >= stof(fields[3]))
+    {
+        cout << "\n only " << fields[3] << " stocks of " << product_name << " is available....";
+        return false;
+    }
+    else
+    {
+        cout << "\n-------------------------------------------\n";
+        cout << "\n Product price: GHc" << product_price << endl;
+        cout << "\n Total Amount : GHc" << totalCost << endl;
+         return true;
+    }
+}
+
+void Transactions::setAmountPayed(float amount)
+{
+    amountPayed = amount;
+    balance = amountPayed - totalCost;
+    saveTransact();
+}
+
+void Transactions::saveTransact()
+{
+    string filename = "transactsData.txt";
+    ShopClass::openfile(filename);
+
+    if (is_fileEmpty)
+        {
+            ShopClass::saveHeader(myfile);
+            myfile << "\t\t\t Transaction info" << endl;
+            myfile << "DATE,CASHIER NAME,CUSTOMER NAME,PRODUCT NAME,PRODUCT QUANTITY,TOTAL COST, AMOUNT PAYED, BALANCE" << endl;
+        }
+
+        // inserting transaction into a file
+        myfile << date << "," << cashier_name << "," << customer_name << "," << product_name
+         << "," << product_quantity << "," << totalCost << "," << amountPayed << "," << balance << endl;
+        myfile.close();
+        cout << "\n\t\t Transaction saved successfully ...... \n";
+        printPaySlip();
+}
+
+void Transactions::printPaySlip()
+{
+    cout << "\n\n_____________________________________________________\n";
+    cout << "\n Date   : " << date << endl;
+    cout << "\n Cashier name   : " << cashier_name << endl;
+    cout << "\n Customer name  : " << customer_name << endl;
+    cout << "\n Customer number: " << customer_number << endl;
+    cout << "\n Product name   : " << product_name << endl;
+    cout << "\n Product price  : GHc" << product_price << endl;
+    cout << "\n Total cost     : GHc" << totalCost << endl;
+    cout << "\n Amount Payed   : GHc" << amountPayed << endl;
+    cout << "\n Balance        : GHc" << balance << endl;
+    cout << "\n\n_____________________________________________________\n";
 }
