@@ -21,9 +21,21 @@ int main() {
     Users user1;
     user1.searchUser("Shaukat");
     user1.editLogins("1", "ADmin", "administrate");
-*/
 
+*/
     Transactions transact;
-    transact.setTransact("12/02/23", "Shaukat", "Tutu Emma", "02346635", "Indomie", 50, 10.00);
+    bool proceed = transact.setTransact("12/02/23", "Shaukat", "Cephas", "0565322", "Indomie", 9);
+
+    char opt;
+    if (proceed)
+        cout << "\n Do you want to proceed to payment (y/n): ";
+        cin >> opt;
+        switch (opt)
+        {
+            case 'y':
+                cout << "proceeding ..... ";
+                transact.setAmountPayed(100.00);
+                break;
+        }
   return 0;
 }
