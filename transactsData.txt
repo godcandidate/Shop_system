@@ -1,0 +1,6 @@
+		Arhin's ShopRite  @Kotei
+	---------------------------------------------
+			 Transaction info
+DATE,CASHIER NAME,CUSTOMER NAME,PRODUCT NAME,PRODUCT QUANTITY,TOTAL COST, AMOUNT PAYED, BALANCE
+12/02/23,Shaukat,Tutu Emma,Indomie,9,90,100,10
+12/02/23,Shaukat,Cephas,Indomie,9,90,100,10
