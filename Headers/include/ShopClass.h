@@ -68,7 +68,7 @@ class Products:ShopClass
 
 };
 
-class Customers:Users
+class Customers:ShopClass
 {
     private:
         string name;
@@ -88,17 +88,19 @@ class Transactions:ShopClass
         string customer_name;
         string customer_number;
         string product_name;
-        short int product_quantity;
+        int product_quantity;
         float product_price;
         float totalCost;
         float amountPayed;
         float balance;
         int retrieveProduct(string, int);
         void displayProgress();
+        void saveTransact();
+        void printPaySlip();
 
     public:
-        void setTransact(string, string, string, string,
-                     string, short int, float);
+        bool setTransact(string, string, string, string,
+                     string, int);
+        void setAmountPayed(float);
 };
-
 #endif // SHOPCLASS_H
