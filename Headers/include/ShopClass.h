@@ -3,7 +3,8 @@
 
 #include <string>
 #include <iostream>
-#include <fstream>
+#include <fstream> // required for files
+#include <iomanip> // required for setw()
 using namespace std;
 
 class ShopClass
@@ -15,7 +16,6 @@ class ShopClass
 
     public:
         ShopClass();
-        void display();
         void saveHeader(ofstream&);
         void openfile(string);
         void textseparator(string, int);
@@ -27,11 +27,15 @@ class ShopClass
         string searchfile(string, string); // search results found
         string* fields = nullptr; // points to the data values in a search results
         void editfile(string, string, string, string);
+        string line; // stores the line of a text
+        ifstream display(string);
+        ifstream mfile;
 
 };
 
 class Users:ShopClass
 {
+
     private:
         int user_ID;
         string fullname;
@@ -43,13 +47,14 @@ class Users:ShopClass
     protected:
         string username;
         string password;
+        const int fieldint_width = 5;
+        const int fieldstr_width = 15;
 
     public:
         void setUser(int, string, string, string, string, string);
         void editLogins(string, string, string);
         void searchUser(string);
-
-        void display();
+        void displayUser();
 };
 
 class Products:ShopClass
@@ -64,7 +69,7 @@ class Products:ShopClass
 
     public:
         void addProduct(short int, string, float, short int);
-        void display();
+        void displayProducts();
 
 };
 
@@ -102,5 +107,6 @@ class Transactions:ShopClass
         bool setTransact(string, string, string, string,
                      string, int);
         void setAmountPayed(float);
+        void displayTransact();
 };
 #endif // SHOPCLASS_H
