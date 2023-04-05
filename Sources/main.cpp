@@ -23,6 +23,7 @@ int main() {
     user1.editLogins("1", "ADmin", "administrate");
 
 */
+/*
     Transactions transact;
     bool proceed = transact.setTransact("12/02/23", "Shaukat", "Cephas", "0565322", "Indomie", 9);
 
@@ -37,5 +38,14 @@ int main() {
                 transact.setAmountPayed(100.00);
                 break;
         }
+*/
+    Users user1;
+    user1.displayUser();
+    cout << "\n\n";
+    Products product1;
+    product1.displayProducts();
+    cout << "\n\n";
+    Transactions transact1;
+    transact1.displayTransact();
   return 0;
 }
