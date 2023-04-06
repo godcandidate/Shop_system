@@ -112,8 +112,9 @@ int main()
                     header("ADD NEW USER");
                     cout << "\n\t\t ID       : ";
                     cin >> userinfo.id;
+                    cin.ignore();
                     cout << "\n\t\t Fullname : ";
-                    cin >> userinfo.name;
+                    getline(cin, userinfo.name);
                     cout << "\n\t\t Role     : ";
                     cin >> userinfo.role;
                     cout << "\n\t\t Username : ";
@@ -178,8 +179,9 @@ int main()
                     header("ADD PRODUCT");
                     cout << "\n\t\t ID       : ";
                     cin >> productitem.id;
+                    cin.ignore();
                     cout << "\n\t\t NAME     : ";
-                    cin >> productitem.name;
+                    getline(cin, productitem.name);
                     cout << "\n\t\t PRICE    : GHc";
                     cin >> productitem.price;
                     cout << "\n\t\t QUANTITY : ";
@@ -254,3 +256,4 @@ int main()
     }
     return 0;
 }
+
