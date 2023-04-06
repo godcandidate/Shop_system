@@ -64,9 +64,7 @@ string ShopClass::searchfile(string filename, string keyword)
 
     while (getline(file, line))
     {
-        size_t pos = line.find(keyword);
-        if (pos != string::npos)
-        {
+         if (line.substr(0, keyword.length()) == keyword) {
             return line;
         }
     }
@@ -81,15 +79,16 @@ void ShopClass::editfile(string filename, string searchword, string oldword, str
 
     // Loop through each line of the CSV file
     string line;
+     //skipping the first three lines
+
     while (getline(infile, line)) {
         // Use a stringstream to retrieve the line of the search result
         stringstream ss(line);
 
         // Check if the searchword is present in the line
-        if (line.find(searchword) != string::npos)
+        if (line.substr(0, searchword.length()) == searchword)
         {
             // Accumulate the modified line with the new values
-
             stringstream modified_line;
             string value;
             while (getline(ss, value, ','))
@@ -129,39 +128,55 @@ void ShopClass::editfile(string filename, string searchword, string oldword, str
 
 void ShopClass::deletefile(string filename, string keyword)
 {
-    bool success;
-     // Open the CSV file in read mode and create a temporary file in write mode
-    ifstream infile(filename);
-    ofstream outfile("temp.csv");
+    int st = 0;
+    string temp_filename = "temp.txt";
+    bool success = false;
+    ifstream input_file(filename);
+    ofstream output_file(temp_filename);
 
-    // Loop through each line of the CSV file
     string line;
-    while (getline(infile, line)) {
-        // Use a stringstream to retrieve the line of the search result
-        stringstream ss(line);
-
-        // Check if the searchword is present in the line
-        if (line.find(keyword) != string::npos)
-        {
+    // initialize to false
+    while (getline(input_file, line)) {
+        if (line.substr(0, keyword.length()) == keyword) {
             success = true;
-        } else {
-            // Write the original line to the temporary file
-            outfile << line << endl;
         }
+        else
+           output_file << line << endl;
     }
 
-    // Close both files and replace the original file with the temporary file
-    infile.close();
-    outfile.close();
-    remove(filename.c_str());
-    rename("temp.csv", filename.c_str());
+    input_file.close();
+    output_file.close();
+    if (success) {
+        remove(filename.c_str());
+        rename(temp_filename.c_str(), filename.c_str());
+        cout << "\n\t\t Deletion successful." << endl;
+    }
+    else {
+        remove(temp_filename.c_str());
+        cout << "\n\t\t Deletion failed: word not found." << endl;
+    }
 
-    if (success)
-        cout << "\n Deleted successfully..........\n";
-    else
-        cout << "\n Delete was unsuccessfully, check spellings of keyword..........\n";
 
 
+}
+
+string ShopClass::searchWord(string filename, string keyword)
+{
+     ifstream file(filename);
+    string line;
+
+    //skipping the first four lines
+    for (int i=0; i < 4; i++)
+        getline(file, line);
+
+    while (getline(file, line))
+    {
+        size_t pos = line.find(keyword);
+        if (pos != string::npos)
+        {
+            return line;
+        }
+    }
 }
 
 ifstream ShopClass::display(string filename)
@@ -202,9 +217,9 @@ void Users::saveLogins()
         {
             ShopClass::saveHeader(myfile);
             myfile << "\t\t\t Login info" << endl;
-            myfile << "ID,USERNAME,PASSWORD" << endl;
+            myfile << "ID,FULLNAME,USERNAME,PASSWORD" << endl;
         }
-        myfile << user_ID << "," << username << "," << password << endl;
+        myfile << user_ID << ","<< fullname << "," << username << "," << password << endl;
         myfile.close();
 }
 
@@ -261,6 +276,30 @@ void Users::deleteUser(string keyword)
 {
     string filename = "usersData.txt";
     ShopClass::deletefile(filename, keyword);
+}
+
+string Users::searchLogin(string username, string password)
+{
+    string name;
+     // Open the CSV file in read mode and create a temporary file in write mode
+    ifstream infile("loginInfo.txt");
+
+    // Loop through each line of the CSV file
+    string line;
+    while (std::getline(infile, line)) {
+        if (line.find(username) != std::string::npos && line.find(password) != std::string::npos) {
+            textseparator(line,4);
+            name = fields[1];
+            break;
+        }
+        else
+            name = "";
+    }
+
+    // Close both files and replace the original file with the temporary file
+    infile.close();
+    return name;
+
 }
 bool isfileEmpty(ifstream& myfile)
 {
@@ -352,7 +391,7 @@ void Products::editProduct(string id, string oldword, string newword)
 
 void Products::deleteProduct(string keyword)
 {
-     string filename = "productsData.txt";
+    string filename = "productsData.txt";
     ShopClass::deletefile(filename, keyword);
 
 }
@@ -363,11 +402,11 @@ void Products::displayProducts()
     {
         ShopClass::textseparator(line, 4);
         //display
-        cout << "\t " << setw(10) << left << fields[0]
+        cout << "\t  " << setw(10) << left << fields[0]
             << setw(15) << left << fields[1]
             << setw(10) << left << fields[2]
             << setw(5) << left << fields[3] << endl;
-        cout << "-----------------------------------------------\n";
+        cout << "\t-----------------------------------------------\n";
     }
     myfile.close();
 }
@@ -380,50 +419,54 @@ void Customers::setCustomer(string fname, string mobile)
 
 int Transactions::retrieveProduct(string name, int qty)
 {
-    string results = ShopClass::searchfile("productsData.txt", name);
+    string results = ShopClass::searchWord("productsData.txt", name);
     if (results.size() != 0)
     {
-        cout << results ;
         ShopClass::textseparator(results, 4);
-        return stoi(fields[2]);
+        return stof(fields[2]);
     }
     else
-        cout << "Error!... product " << name << " not found";
+        return 0;
 }
 
-bool Transactions::setTransact(string tdate, string cashier, string customerName,
-                               string customerNumber, string productName,
-                               int qty)
+float Transactions::getCost()
+{
+    return totalCost;
+}
+float Transactions::getPrice()
+{
+    return product_price;
+}
+bool Transactions::isproceed(string productName, int quantity)
+{
+    // Retrieve product price from product file
+    product_name = productName;
+    product_quantity = quantity;
+
+    product_price = retrieveProduct(productName, quantity);
+    totalCost = product_price * quantity;
+
+    if (product_quantity >= stof(fields[3]))
+    {
+        cout << "\n\t\t only " << fields[3] << " stocks of " << product_name << " is available............";
+        return false;
+    }
+    else
+    {
+        cout << "\n\t\t -------------------------------------------\n";
+        cout << "\n\t\t  Product price: GHc" << product_price << endl;
+        cout << "\n\t\t  Cost         : GHc" << totalCost << endl;
+         return true;
+    }
+}
+
+void Transactions::setTransact(string tdate, string cashier, string customerName,
+                               string customerNumber)
 {
     date = tdate;
     cashier_name = cashier;
     customer_name = customerName;
     customer_number = customerNumber;
-    product_name = productName;
-    product_quantity = qty;
-
-    // Retrieve product price from product file
-    product_price = retrieveProduct(product_name, product_quantity);
-    totalCost = product_price * product_quantity;
-
-    if (product_quantity >= stof(fields[3]))
-    {
-        cout << "\n only " << fields[3] << " stocks of " << product_name << " is available....";
-        return false;
-    }
-    else
-    {
-        cout << "\n-------------------------------------------\n";
-        cout << "\n Product price: GHc" << product_price << endl;
-        cout << "\n Total Amount : GHc" << totalCost << endl;
-         return true;
-    }
-}
-
-void Transactions::setAmountPayed(float amount)
-{
-    amountPayed = amount;
-    balance = amountPayed - totalCost;
     saveTransact();
 }
 
@@ -436,15 +479,13 @@ void Transactions::saveTransact()
         {
             ShopClass::saveHeader(myfile);
             myfile << "\t\t\t Transaction info" << endl;
-            myfile << "DATE,CASHIER NAME,CUSTOMER NAME,PRODUCT NAME,PRODUCT QUANTITY,TOTAL COST, AMOUNT PAYED, BALANCE" << endl;
+            myfile << "DATE,CASHIER-NAME,CUSTOMER-NAME,MOBILE,PRODUCT,QUANTITY,TOTAL-COST" << endl;
         }
 
         // inserting transaction into a file
-        myfile << date << "," << cashier_name << "," << customer_name << "," << product_name
-         << "," << product_quantity << "," << totalCost << "," << amountPayed << "," << balance << endl;
+        myfile << date << "," << cashier_name << "," << customer_name << "," << customer_number << ","<< product_name
+         << "," << product_quantity << "," << totalCost << endl;
         myfile.close();
-        cout << "\n\t\t Transaction saved successfully ...... \n";
-        //printPaySlip();
 }
 
 void Transactions::displayTransact()
@@ -452,17 +493,60 @@ void Transactions::displayTransact()
     mfile = ShopClass::display("transactsData.txt");
     while (getline(mfile, line))
     {
-        ShopClass::textseparator(line, 9);
+        ShopClass::textseparator(line, 7);
         //display
-        cout << "\t " << setw(10) << left << fields[0]
-            << setw(15) << left << fields[1]
-            << setw(15) << left << fields[2]
+        cout << "\t " << setw(15) << left << fields[0]
+            << setw(18) << left << fields[1]
+            << setw(18) << left << fields[2]
             << setw(15) << left << fields[3]
-            << setw(10) << left << fields[4]
-            << setw(15) << left << fields[6]
-            << setw(15) << left << fields[7]
-            << setw(15) << left << fields[8] << endl;
-        cout << "----------------------------------------------------------------------------------------------------\n";
+            << setw(15) << left << fields[4]
+            << setw(10) << left << fields[5]
+            << setw(15) << left << fields[6] << endl;
+        cout << "-------------------------------------------------------------------------------------------------------------\n";
     }
     myfile.close();
+}
+
+void Transactions::searchTransact(string keyword)
+{
+    ifstream file("transactsData.txt");
+    string line;
+    int count = 0;
+
+     //display
+        cout << "\t " << setw(10) << left << "DATE"
+            << setw(15) << left << "CASHIER NAME"
+            << setw(15) << left << "CUSTOMER NAME"
+            << setw(15) << left << "MOBILE"
+            << setw(15) << left << "PRODUCT NAME"
+            << setw(10) << left << "QUANTITY"
+            << setw(15) << left << "TOTAL COST"<< endl;
+        cout << "--------------------------------------------------------------------------------------------------------------\n";
+
+    //skipping the first four lines
+    for (int i=0; i < 4; i++)
+        getline(file, line);
+
+    while (getline(file, line))
+    {
+        size_t pos = line.find(keyword);
+
+        if (pos != string::npos)
+        {
+           ShopClass::textseparator(line, 9);
+            //display
+            cout << "\t " << setw(10) << left << fields[0]
+                << setw(15) << left << fields[1]
+                << setw(15) << left << fields[2]
+                << setw(15) << left << fields[3]
+                << setw(10) << left << fields[4]
+                << setw(15) << left << fields[5]
+                << setw(15) << left << fields[6]
+                << setw(15) << left << fields[7] << endl;
+            cout << "----------------------------------------------------------------------------------------------------------\n";
+            count++;
+        }
+    }
+    if (count == 0)
+        cout << "\t\t No transaction made ........"<<endl;
 }
