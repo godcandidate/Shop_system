@@ -74,6 +74,7 @@ string ShopClass::searchfile(string filename, string keyword)
 
 void ShopClass::editfile(string filename, string searchword, string oldword, string newword )
 {
+    bool success;
      // Open the CSV file in read mode and create a temporary file in write mode
     ifstream infile(filename);
     ofstream outfile("temp.csv");
@@ -88,13 +89,14 @@ void ShopClass::editfile(string filename, string searchword, string oldword, str
         if (line.find(searchword) != string::npos)
         {
             // Accumulate the modified line with the new values
-            cout << "\n Replacing word ..........\n";
+
             stringstream modified_line;
             string value;
             while (getline(ss, value, ','))
             {
                 if (value == oldword)
                 {
+                    success = true;
                     modified_line << newword;
                 } else {
                     modified_line << value;
@@ -116,6 +118,49 @@ void ShopClass::editfile(string filename, string searchword, string oldword, str
     outfile.close();
     remove(filename.c_str());
     rename("temp.csv", filename.c_str());
+
+    if (success)
+        cout << "\n Edited successfully..........\n";
+    else
+        cout << "\n Edit was unsuccessfully, check spellings of old word..........\n";
+
+
+}
+
+void ShopClass::deletefile(string filename, string keyword)
+{
+    bool success;
+     // Open the CSV file in read mode and create a temporary file in write mode
+    ifstream infile(filename);
+    ofstream outfile("temp.csv");
+
+    // Loop through each line of the CSV file
+    string line;
+    while (getline(infile, line)) {
+        // Use a stringstream to retrieve the line of the search result
+        stringstream ss(line);
+
+        // Check if the searchword is present in the line
+        if (line.find(keyword) != string::npos)
+        {
+            success = true;
+        } else {
+            // Write the original line to the temporary file
+            outfile << line << endl;
+        }
+    }
+
+    // Close both files and replace the original file with the temporary file
+    infile.close();
+    outfile.close();
+    remove(filename.c_str());
+    rename("temp.csv", filename.c_str());
+
+    if (success)
+        cout << "\n Deleted successfully..........\n";
+    else
+        cout << "\n Delete was unsuccessfully, check spellings of keyword..........\n";
+
 
 }
 
@@ -183,16 +228,17 @@ void Users::searchUser(string keyword)
     string query = ShopClass::searchfile("usersData.txt", keyword);
     if (query.size() != 0)
     {
-        cout << "Item found : " << query;
-        ShopClass::textseparator(query,5);
-        cout << "\n--------VALUES----------\n";
+        ShopClass::textseparator(query,4);
 
-        for (int i = 0; i < 5; i++) {
-        cout <<  fields[i] << endl;
-        }
+        //displaying results
+        cout << "\n\t\t ID       : " << fields[0];
+        cout << "\n\t\t Fullname : " << fields[1];
+        cout << "\n\t\t Role     : " << fields[2];
+        cout << "\n\t\t Number   : " << fields[3];
+        /*
         //convert id to float
         float di = stof(fields[0]);
-        cout << "-- " << di + 1;
+        cout << "-- " << di + 1;*/
     }
     else
         cout << "Item not found " << endl;
@@ -205,6 +251,17 @@ void Users::editLogins(string id, string oldword, string newword)
     ShopClass::editfile(filename, id, oldword, newword);
 }
 
+void Users::editUser(string id, string oldword, string newword)
+{
+    string filename = "usersData.txt";
+    ShopClass::editfile(filename, id, oldword, newword);
+}
+
+void Users::deleteUser(string keyword)
+{
+    string filename = "usersData.txt";
+    ShopClass::deletefile(filename, keyword);
+}
 bool isfileEmpty(ifstream& myfile)
 {
     if (!myfile.is_open())
@@ -235,11 +292,11 @@ void Users::displayUser()
     {
         ShopClass::textseparator(line, 4);
         //display
-        cout << setw(5) << left << fields[0]
+        cout << "\t " << setw(10) << left << fields[0]
             << setw(15) << left << fields[1]
             << setw(15) << left << fields[2]
             << setw(15) << left << fields[3] << endl;
-        cout << "-----------------------------------------------\n";
+        cout << "--------------------------------------------------------------\n";
     }
     myfile.close();
 
@@ -269,6 +326,36 @@ void Products::saveProduct()
         myfile.close();
         cout << "\n\t\t Product's details saved successfully ...... \n";
 }
+
+void Products::searchProduct(string keyword)
+{
+    string query = ShopClass::searchfile("productsData.txt", keyword);
+    if (query.size() != 0)
+    {
+        ShopClass::textseparator(query,4);
+
+        //displaying results
+        cout << "\n\t\t ID        : " << fields[0];
+        cout << "\n\t\t Name      : " << fields[1];
+        cout << "\n\t\t Price(GHc): " << fields[2];
+        cout << "\n\t\t Quantity  : " << fields[3];
+    }
+    else
+        cout << "\n\t\t Item not found............" << endl;
+}
+
+void Products::editProduct(string id, string oldword, string newword)
+{
+    string filename = "productsData.txt";
+    ShopClass::editfile(filename, id, oldword, newword);
+}
+
+void Products::deleteProduct(string keyword)
+{
+     string filename = "productsData.txt";
+    ShopClass::deletefile(filename, keyword);
+
+}
 void Products::displayProducts()
 {
     mfile = ShopClass::display("productsData.txt");
@@ -276,7 +363,7 @@ void Products::displayProducts()
     {
         ShopClass::textseparator(line, 4);
         //display
-        cout << setw(5) << left << fields[0]
+        cout << "\t " << setw(10) << left << fields[0]
             << setw(15) << left << fields[1]
             << setw(10) << left << fields[2]
             << setw(5) << left << fields[3] << endl;
@@ -367,7 +454,7 @@ void Transactions::displayTransact()
     {
         ShopClass::textseparator(line, 9);
         //display
-        cout << setw(10) << left << fields[0]
+        cout << "\t " << setw(10) << left << fields[0]
             << setw(15) << left << fields[1]
             << setw(15) << left << fields[2]
             << setw(15) << left << fields[3]
