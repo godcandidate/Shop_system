@@ -16,20 +16,24 @@ class ShopClass
 
     public:
         ShopClass();
-        void saveHeader(ofstream&);
-        void openfile(string);
-        void textseparator(string, int);
-
 
     protected:
+        //variables
         ofstream myfile; //stores an open file
         bool is_fileEmpty;
-        string searchfile(string, string); // search results found
-        string* fields = nullptr; // points to the data values in a search results
-        void editfile(string, string, string, string);
         string line; // stores the line of a text
         ifstream display(string);
         ifstream mfile;
+        string* fields = nullptr; // points to the data values in a search results
+
+        //methods
+        void saveHeader(ofstream&);
+        void openfile(string);
+        void textseparator(string, int);
+        string searchfile(string, string); // search results found
+        void editfile(string, string, string, string);
+        void deletefile(string, string);
+
 
 };
 
@@ -53,8 +57,10 @@ class Users:ShopClass
     public:
         void setUser(int, string, string, string, string, string);
         void editLogins(string, string, string);
+        void editUser(string, string, string);
         void searchUser(string);
         void displayUser();
+        void deleteUser(string);
 };
 
 class Products:ShopClass
@@ -70,7 +76,9 @@ class Products:ShopClass
     public:
         void addProduct(short int, string, float, short int);
         void displayProducts();
-
+        void searchProduct(string);
+        void editProduct(string, string, string);
+        void deleteProduct(string);
 };
 
 class Customers:ShopClass
@@ -110,3 +118,4 @@ class Transactions:ShopClass
         void displayTransact();
 };
 #endif // SHOPCLASS_H
+
