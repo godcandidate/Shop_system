@@ -33,6 +33,7 @@ class ShopClass
         string searchfile(string, string); // search results found
         void editfile(string, string, string, string);
         void deletefile(string, string);
+        string searchWord(string, string);
 
 
 };
@@ -57,6 +58,7 @@ class Users:ShopClass
     public:
         void setUser(int, string, string, string, string, string);
         void editLogins(string, string, string);
+        string searchLogin(string, string);
         void editUser(string, string, string);
         void searchUser(string);
         void displayUser();
@@ -104,18 +106,19 @@ class Transactions:ShopClass
         int product_quantity;
         float product_price;
         float totalCost;
-        float amountPayed;
-        float balance;
         int retrieveProduct(string, int);
         void displayProgress();
         void saveTransact();
         void printPaySlip();
 
     public:
-        bool setTransact(string, string, string, string,
-                     string, int);
-        void setAmountPayed(float);
+        void setTransact(string, string, string, string);
         void displayTransact();
+        void searchTransact(string);
+        float* getPriceCost();
+        float getPrice();
+        float getCost();
+        bool isproceed(string, int);
+
 };
 #endif // SHOPCLASS_H
-
