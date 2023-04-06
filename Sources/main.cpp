@@ -21,6 +21,23 @@ struct UserInfo
     string role;
     string number;
 };
+//global
+
+struct TransactInfo
+{
+    string date;
+    string customer_name;
+    string customer_mobile;
+    string* product_name;
+    float* product_price = nullptr;
+    int* product_quantity = nullptr;
+    int nproducts;
+    float* cost = nullptr;
+    float totalcost;
+    float amountPayed;
+    float balance;
+};
+TransactInfo transactinfo;
 
 void header(string heading)
 {
@@ -56,10 +73,37 @@ void edit()
     cin >> editItem.pass;
 }
 
+UserInfo currentUser;
+bool login()
+{
+    Users user1;
+    cout << "\n\t\t Enter username : ";
+    cin >> currentUser.usname;
+    cout << "\n\t\t Enter password : ";
+    cin >> currentUser.pass;
+    currentUser.name = user1.searchLogin(currentUser.usname, currentUser.pass);
+    if (currentUser.name != "")
+        return true;
+    else
+        return false;
+
+}
+
+void slip_table(string name, float price, int quantity, float cost)
+{
+    cout << "\t " << setw(20) << left << name
+            << setw(15) << left << price
+            << setw(15) << left << quantity
+            << setw(15) << left << cost << endl;
+    cout << "\t ------------------------------------------------------------\n";
+
+}
+
 int main()
 {
     int choice;
     char opt;
+    bool success;
 
     //STRUCTS
     ProductItem productitem;
@@ -139,6 +183,7 @@ int main()
                     cout << "\n\t\t Enter User ID : ";
                     cin >> userinfo.name;
                     user1.searchUser(userinfo.name);
+
                     opt = deleteItem();
                     if (opt == 'y')
                         user1.deleteUser(userinfo.name);
@@ -202,8 +247,8 @@ int main()
                     cout << "\n\t\t Enter ProductID : ";
                     cin >> productitem.name;
                     product1.searchProduct(productitem.name);
-                    opt = deleteItem();
 
+                    opt = deleteItem();
                     if (opt == 'y')
                         product1.deleteProduct(productitem.name);
                     break;
@@ -230,30 +275,122 @@ int main()
 
     else if (choice == 2)
     {
-        cout << "\n\t         *************************************\n"<<endl;
-        cout << "\n\t        What activity do you want to undertake?\n" << endl;
-        cout << "\t\t 1. Customer Service"<<endl;
-        cout << "\t\t 2. Manage Product "<<endl;
-        cout << "\t\t 3. View Product"<<endl;
-        cout << "\n\n\t         *************************************\n"<<endl;
-        cout << "\t\t Please select: ";
-         cin >> choice;
+        header("LOGIN");
+        bool success = login();
 
-		system("cls");
-          if (choice == 1)
-          {
-              cout << "\n\t         *************************************\n"<<endl;
-              cout << "\n\t        What again do you want to do?\n" << endl;
-              cout << "\t\t 1. Register Customer"<<endl;
-              cout << "\t\t 2. Select items purchased "<<endl;
-              cout << "\t\t 3. Add process to database"<<endl;
-              cout << "\t\t 3. Print PaySlip"<<endl;
-              cout << "\n\n\t         *************************************\n"<<endl;
-              cout << "\t\t Please select: ";
-              cin >> choice;
-          }
+        system("cls");
+        if (success)
+        {
+            header("CASHIER");
+            cout << "\n\t       Welcome " << currentUser.name <<", select your option?\n" << endl;
+            cout << "\t\t 1. Purchase Item"<<endl;
+            cout << "\t\t 2. View your Transactions "<<endl;
+            cout << "\t\t 3. Change credentials"<<endl;
+            cout << "\n\n\t         *************************************\n"<<endl;
+            cout << "\t\t Please select: ";
+            cin >> choice;
+
+            system("cls");
+            switch (choice)
+            {
+                case 1:
+                    header("Purchase Item");
+                    cout << "n\t\t Enter customer details"<<endl;
+                    cin.ignore();
+                    cout << "\n\t\t Fullname : ";
+                    getline(cin, transactinfo.customer_name);
+                    cout << "\n\t\t Mobile   : ";
+                    cin >> transactinfo.customer_mobile;
+                    cout << "\n\t\t Number of products to purchase: ";
+                    cin >> transactinfo.nproducts;
+
+                    transactinfo.product_name = new string[transactinfo.nproducts];
+                    transactinfo.product_price = new float[transactinfo.nproducts];
+                    transactinfo.product_quantity = new int[transactinfo.nproducts];
+                    transactinfo.cost = new float[transactinfo.nproducts];
+
+                    for (int i = 0; i < transactinfo.nproducts; i++)
+                    {
+                        system("cls");
+                        header("PURCHASING ITEM ");
+                        cout << "\n\t\t Product "<< i + 1 << endl;
+                        cin.ignore();
+                        cout << "\n\t\t Name     : ";
+                        getline(cin, transactinfo.product_name[i]);
+                        cout << "\n\t\t Quantity : ";
+                        cin >> transactinfo.product_quantity[i];
+                        success = transact1.isproceed(transactinfo.product_name[i], transactinfo.product_quantity[i]);
+
+                        //transact;
+                        if (success)
+                        {
+                            transactinfo.cost[i] = transact1.getCost();
+                            transactinfo.product_price[i] = transact1.getPrice();
+                            cout << "\n\t Press any key to continue: ";
+                            cin >> opt;
+                        }
+                        else
+                        {
+                            cout << "\n\t Press any key to continue: ";
+                            cin >> opt;
+                        }
+
+                    }
+                    for (int i = 0; i < transactinfo.nproducts; i++)
+                    {
+                        transactinfo.totalcost += transactinfo.cost[i];
+                    }
+                    system("cls");
+                    header("PAYMENT");
+                    cout << "\n\t Total Amount : GHc" << transactinfo.totalcost;
+                    cout << "\n\t Amount Payed : GHc";
+                    cin >> transactinfo.amountPayed;
+
+                    //
+                    if (transactinfo.amountPayed >= transactinfo.totalcost)
+                    {
+                        transactinfo.balance = transactinfo.amountPayed - transactinfo.totalcost;
+                        system("cls");
+                        header("PAYSLIP");
+                        cout << "\n\t\t Cashier name     : " << currentUser.name;
+                        cout << "\n\t\t Customer name    : " << transactinfo.customer_name;
+                        //loop
+
+                        cout << "\n\n\t " << setw(20) << left << "Product Name"
+                        << setw(15) << left << "Price"
+                        << setw(15) << left << "Quantity"
+                        << setw(15) << left << "COST" << endl;
+                        cout << "\t ------------------------------------------------------------\n";
+                        for (int i = 0; i < transactinfo.nproducts; i++)
+                        {
+                            //save each transaction
+                            transact1.setTransact("12/03/23", currentUser.name, transactinfo.customer_name,
+                                                  transactinfo.customer_mobile);
+                            slip_table(transactinfo.product_name[i], transactinfo.product_price[i],
+                                        transactinfo.product_quantity[i], transactinfo.cost[i]);
+                        }
+                        cout << "\t__________________________________\n";
+                        cout << "\t " << setw(15) << left << "Total Cost   : GHc" << transactinfo.totalcost << endl;
+                        cout << "\t " << setw(15) << left << "Amount Payed : GHc" << transactinfo.amountPayed << endl;
+                        cout << "\t " << setw(15) << left << "Balance      : GHc" << transactinfo.balance << endl;
+                        cout << "\t___________________________________\n";
+                    }
+                    else
+                        cout << "\n\t\t Transaction failed, insufficient balance";
+
+
+
+
+
+                    break;
+
+                case 2:
+                    header("Transactions");
+                    transact1.searchTransact(currentUser.name);
+                    break;
+            }
+        }
 
     }
     return 0;
 }
-
